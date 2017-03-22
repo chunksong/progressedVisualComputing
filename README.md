@@ -1,3 +1,3 @@
 # progressedVisualComputing
 
-This project is implement of classifier.
+This project is implementation of classifier.
