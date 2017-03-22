@@ -119,24 +119,18 @@ while True:
 
 	TestVec = numpy.matrix([float(SplitLine[0]),float(SplitLine[1]),float(SplitLine[2]),float(SplitLine[3])])
 	
-	SetoDistanceVec = (LA.inv(SetoCovMat)).dot((TestVec - SetoMeanVec).T)	
-	VersDistanceVec = (LA.inv(VersCovMat)).dot((TestVec - VersMeanVec).T)	
-	VirgDistanceVec = (LA.inv(VirgCovMat)).dot((TestVec - VirgMeanVec).T)	
-	SetoNorm = LA.norm(SetoDistanceVec)
-	VersNorm = LA.norm(VersDistanceVec)
-	VirgNorm = LA.norm(VirgDistanceVec)
+	SetoDF = (TestVec).dot((LA.inv(SetoCovMat)* (-0.5)).dot((TestVec).T) + LA.inv(SetoCovMat).dot(SetoMeanVec.T)) - 0.5 * SetoMeanVec.dot(LA.inv(SetoCovMat)).dot(SetoMeanVec.T) - 0.5 * numpy.log(LA.det(SetoCovMat))
+	VersDF = (TestVec).dot((LA.inv(VersCovMat)* (-0.5)).dot((TestVec).T) + LA.inv(VersCovMat).dot(VersMeanVec.T)) - 0.5 * VersMeanVec.dot(LA.inv(VersCovMat)).dot(VersMeanVec.T) - 0.5 * numpy.log(LA.det(VersCovMat))
+	VirgDF = (TestVec).dot((LA.inv(VirgCovMat)* (-0.5)).dot((TestVec).T) + LA.inv(VirgCovMat).dot(VirgMeanVec.T)) - 0.5 * VirgMeanVec.dot(LA.inv(VirgCovMat)).dot(VirgMeanVec.T) - 0.5 * numpy.log(LA.det(VirgCovMat))
 
-	SetoDF = SetoNorm - VersNorm
-	VersDF = VersNorm - VirgNorm
-	VirgDF = VirgNorm - SetoNorm
 
-	if SetoNorm > VersNorm:
-		if VersNorm > VirgNorm:
+	if SetoDF < VersDF:
+		if VersDF < VirgDF:
 			ConfusionMat[int(SplitLine[4])-1,2] += 1
 		else:
 			ConfusionMat[int(SplitLine[4])-1,1] += 1
 	else:
-		if SetoNorm > VirgNorm:
+		if SetoDF < VirgDF:
 			ConfusionMat[int(SplitLine[4])-1,2] += 1
 		else:
 			ConfusionMat[int(SplitLine[4])-1,0] += 1
